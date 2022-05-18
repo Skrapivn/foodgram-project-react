@@ -1,7 +1,8 @@
-from django.core.management.base import BaseCommand, CommandError
-from ingredients_recipes.models import Ingredient
-
 import csv
+
+from django.core.management.base import BaseCommand, CommandError
+
+from ingredients_recipes.models import Ingredient
 
 
 class Command(BaseCommand):
@@ -22,3 +23,5 @@ class Command(BaseCommand):
             raise CommandError(
                 'Файл не найден или возникла ошибка при обработке'
             )
+
+# ../../data/ingredients.csv

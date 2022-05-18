@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class CustomUserCreate(AbstractUser):
     email = models.EmailField(max_length=254, unique=True,
                               verbose_name='Адрес электронной почты')
@@ -8,7 +9,6 @@ class CustomUserCreate(AbstractUser):
                                 verbose_name='Уникальный юзернейм')
     first_name = models.CharField(max_length=150, verbose_name='Имя')
     last_name = models.CharField(max_length=150, verbose_name='Фамилия')
-    password = models.CharField(max_length=150, verbose_name='Пароль')
     REQUIRED_FIELDS = ['username']
     USERNAME_FIELD = 'email'
 
