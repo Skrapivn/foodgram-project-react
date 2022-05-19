@@ -17,7 +17,7 @@ class RecipeFilter(FilterSet):
         fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
 
     def favorited_filter(self, queryset, name, value):
-        if value: # !!!!!!!!!!!!!!and user.is_authenticated
+        if value:  # !!!!!!!!!!!!!!and user.is_authenticated
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
@@ -28,8 +28,7 @@ class RecipeFilter(FilterSet):
 
 
 class IngredientFilter(SearchFilter):
-    search_param = 'name'
-
+    CharFilter(field_name='name', lookup_expr='icontains')
 
 # class RecipeFilter(FilterSet):
 #     is_favorited = BooleanFilter(

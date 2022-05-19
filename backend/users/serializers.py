@@ -9,7 +9,7 @@ from users.models import CustomUserCreate, Follow
 class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = CustomUserCreate
-        fields = ('email', 'username',
+        fields = ('email', 'id', 'username',
                   'first_name', 'last_name', 'password')
 
 
@@ -18,7 +18,7 @@ class CustomUserSerializer(UserSerializer):
 
     class Meta:
         model = CustomUserCreate
-        fields = ('id', 'email', 'username', 'first_name',
+        fields = ('email', 'id', 'username', 'first_name',
                   'last_name', 'is_subscribed')
 
     def get_is_subscribed(self, obj):
