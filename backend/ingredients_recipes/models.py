@@ -20,7 +20,7 @@ class Ingredient(models.Model):
         ]
 
     def __str__(self):
-        return '{} {}'.format(self.name, self.measurement_unit)
+        return '{} - {}'.format(self.name, self.measurement_unit)
 
 
 class Tag(models.Model):
@@ -35,7 +35,7 @@ class Tag(models.Model):
                             verbose_name='Уникальный слаг')
 
     class Meta:
-        ordering = ['-id']
+        ordering = ['name']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -48,7 +48,7 @@ class Recipe(models.Model):
                                   verbose_name='Список тегов')
     author = models.ForeignKey(CustomUserCreate,
                                on_delete=models.CASCADE,
-                               related_name='recipes',  # !!!!!!!!!!!!!!!!!!!
+                               related_name='recipes',
                                verbose_name='Автор рецепта')
     ingredients = models.ManyToManyField(Ingredient,
                                          through='IngredientInRecipe',
@@ -73,7 +73,7 @@ class Recipe(models.Model):
         verbose_name_plural = 'Рецепты'
 
     def __str__(self):
-        return self.name
+        return f'{self.name} - {self.author}'
 
 
 class IngredientInRecipe(models.Model):

@@ -4,6 +4,7 @@ from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.pagination import PagePagination
 from users.models import CustomUserCreate, Follow
@@ -12,6 +13,7 @@ from users.serializers import FollowListSerializer, FollowSerializer
 
 class FollowApiView(APIView):
     pagination_class = PagePagination
+    filter_backends = [DjangoFilterBackend]
     permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=['post', ],)
@@ -34,6 +36,7 @@ class FollowApiView(APIView):
 
 class FollowListAPIView(ListAPIView):
     pagination_class = PagePagination
+    filter_backends = [DjangoFilterBackend]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

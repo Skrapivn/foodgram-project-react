@@ -7,6 +7,7 @@ from ingredients_recipes.models import Recipe
 
 class RecipeFilter(FilterSet):
     tags = filters.AllValuesMultipleFilter(field_name='tags__slug')
+    author = filters.ChoiceFilter(method='filter_author')
     is_favorited = filters.BooleanFilter(method='favorited_filter')
     is_in_shopping_cart = filters.BooleanFilter(
         method='shopping_cart_filter'
@@ -15,6 +16,11 @@ class RecipeFilter(FilterSet):
     class Meta:
         model = Recipe
         fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
+
+    def author_filter(self, queryset, name, value):
+        if value == 'me':
+            return queryset.filter(author=self.request.user)
+        return queryset.filter(author=value)
 
     def favorited_filter(self, queryset, name, value):
         if value:  # !!!!!!!!!!!!!!and user.is_authenticated
