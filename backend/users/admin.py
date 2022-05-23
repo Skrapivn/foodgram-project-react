@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 
-from .models import CustomUserCreate
+from .models import CustomUserCreate, Follow
 
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -14,4 +14,5 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(CustomUserCreate, CustomUserAdmin)
+admin.site.register(Follow)
 admin.site.unregister(Group)

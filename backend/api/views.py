@@ -8,6 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from api.utils import get_download_shopping_cart
 
 from ingredients_recipes.models import (Favorite, Ingredient,
                                         IngredientInRecipe, Recipe,
@@ -17,9 +18,9 @@ from .filters import IngredientFilter, RecipeFilter
 from .pagination import PagePagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientSerializer,
-                          RecipeListSerializer, RecipeWriteSerializer,
+                          RecipeListSerializer, RecipeRepresentationSerializer, RecipeWriteSerializer,
                           ShoppingCartSerializer, TagSerializer)
-
+from api import response_messages as msg
 
 class TagsViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
@@ -32,6 +33,7 @@ class IngredientsViewSet(ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     permission_classes = [AllowAny]
     serializer_class = IngredientSerializer
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
     pagination_class = None
 
@@ -70,46 +72,46 @@ class RecipeViewSet(ModelViewSet):
         return None
 
     @action(detail=True, methods=['post', 'delete'],
+            url_name='shopping_cart',
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk):
+        recipe = get_object_or_404(Recipe, id=pk)
+        shopping_cart = self.request.user.shopping_cart.filter(recipe=recipe)
         if request.method == 'POST':
-            data = {'user': request.user.id, 'recipe': pk}
-            serializer = ShoppingCartSerializer(
-                data=data, context={'request': request}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
-            user = request.user
-            recipe = get_object_or_404(Recipe, id=pk)
-            shopping_cart = get_object_or_404(
-                ShoppingCart, user=user, recipe=recipe
-            )
-            shopping_cart.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return None
+            if shopping_cart.exists():
+                return Response(
+                    msg.CART_ADD_ERROR,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-    @action(detail=False, methods=('get',))
-    def download_shopping_cart(self, request, *args, **kwargs):
-        result = {}
-        shopping_card = ShoppingCart.objects.filter(user=request.user)
-        for i in shopping_card:
-            ingredients = IngredientInRecipe.objects.filter(
-                recipe=i.recipe
+            shopping_cart = ShoppingCart.objects.create(
+                user=self.request.user, recipe=recipe
             )
-            for i in ingredients:
-                result.update({
-                    i.ingredient.name:
-                        [i.amount + result.get(i.ingredient.name, [0, ' '])[0],
-                         i.ingredient.measurement_unit]
-                })
-        response = HttpResponse(
-            content_type='text/csv',
-            headers={
-                'Content-Disposition': 'attachment; filename="cart.csv"'},
-        )
-        writer = csv.writer(response)
-        for name, count in result.items():
-            writer.writerow([name, str(count[0]), count[1]])
-        return response
+            shopping_cart.save()
+            serializer = RecipeRepresentationSerializer(recipe)
+            return Response(
+                serializer.data, status=status.HTTP_201_CREATED
+            )
+
+        if request.method == 'DELETE':
+            if shopping_cart.exists():
+                shopping_cart.delete()
+                return Response(
+                    msg.CARD_DELETE_INFO,
+                    status=status.HTTP_204_NO_CONTENT
+                )
+
+            return Response(
+                msg.CARD_DELETE_ERROR,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(
+        detail=False,
+        url_name='download_shopping_cart',
+        permission_classes=(IsAuthenticated,),
+    )
+    def download_shopping_cart(self, request):
+        return get_download_shopping_cart(self, request)

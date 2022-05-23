@@ -1,6 +1,7 @@
 from django_filters import CharFilter
 from django_filters.rest_framework import FilterSet, filters
 from rest_framework.filters import SearchFilter
+from ingredients_recipes.models import Ingredient
 
 from ingredients_recipes.models import Recipe
 
@@ -23,7 +24,7 @@ class RecipeFilter(FilterSet):
         return queryset.filter(author=value)
 
     def favorited_filter(self, queryset, name, value):
-        if value:  # !!!!!!!!!!!!!!and user.is_authenticated
+        if value:
             return queryset.filter(favorites__user=self.request.user)
         return queryset
 
@@ -33,8 +34,15 @@ class RecipeFilter(FilterSet):
         return queryset
 
 
-class IngredientFilter(SearchFilter):
-    CharFilter(field_name='name', lookup_expr='icontains')
+class IngredientFilter(FilterSet):
+    name = CharFilter(field_name='name', method='istarts_with')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name',)
+
+    def istarts_with(self, queryset, slug, name):
+        return queryset.filter(name__istartswith=name)
 
 # class RecipeFilter(FilterSet):
 #     is_favorited = BooleanFilter(
