@@ -1,11 +1,9 @@
 SUBSCRIPTION_ERROR = {
-    'error': (
-        'Вы уже подписаны на этого пользователя'
-    )
+    'error': 'Вы уже подписаны на этого пользователя'
 }
 
 UNSUBSCRIBE_INFO = {
-    'success': 'Вы успешно отписались от пользователя'
+    'success': 'Отписка от пользователя успешна!'
 }
 
 UNSUBSCRIBE_ERROR = {
@@ -13,11 +11,11 @@ UNSUBSCRIBE_ERROR = {
 }
 
 FAVORITE_ERROR = {
-    'error': 'Этот рецепт уже в Вашем избранном'
+    'error': 'Этот рецепт уже в избранном'
 }
 
 UNFAVORITE_INFO = {
-    'success': 'Вы успешно удалили рецепт из избранного'
+    'success': 'Рецепт удален из избранного!'
 }
 
 UNFAVORITE_ERROR = {
@@ -29,14 +27,24 @@ CART_ADD_ERROR = {
 }
 
 CARD_DELETE_INFO = {
-    'success': 'Вы успешно удалили рецепт из списка покупок'
+    'success': 'Рецепт из списка покупок удален!'
 }
 
 CARD_DELETE_ERROR = {
     'error': 'Вы не добавляли этот рецепт в список покупок'
 }
 
-INGREDIENT_ERROR = 'В рецепте должен быть хотя бы один ингредиент'
+INGREDIENT_ERROR = {
+    'error': 'В рецепте должен быть хотя бы один ингредиент'
+}
+
+TAG_ERROR = {
+    'error': 'Нужно выбрать хотя бы один тэг!'
+}
+
+UNIQUE_TAG_ERROR = {
+    'error': 'Нужно выбрать хотя бы один тэг!'
+}
 
 INGREDIENT_AMOUNT_ERROR = {
     'error': 'Количество ингредиента должно быть целым и больше 0'
@@ -47,7 +55,9 @@ UNIQUE_INGREDIENTS_ERROR = {
 }
 
 SELF_SUBSCRIPTION_ERROR = {
-    'info': 'Вы не можете подписаться на самого себя'
+    'error': 'Вы не можете подписаться на самого себя'
 }
 
-COOKING_TIME_ERROR = 'Время приготовления должно быть больше 0'
+COOKING_TIME_ERROR = {
+    'error': 'Время приготовления должно быть больше 0'
+}

@@ -1,6 +1,7 @@
 import os
 
 from django.http.response import HttpResponse
+
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -17,7 +18,7 @@ def get_pdf_file(data, response):
     )
     pdfmetrics.registerFont(TTFont('DejaVuSans', djvsans_path))
     page.setFont('DejaVuSans', 20)
-    page.drawString(130, 600, 'Список покупок на сегодня:')
+    page.drawString(130, 600, 'Список покупок:')
     page.setFont('DejaVuSans', 16)
     height = 550
 
@@ -38,23 +39,23 @@ def get_download_shopping_cart(self, request):
     shopping_list_data = IngredientInRecipe.objects.filter(
         recipe__shopping_cart__user=request.user
     )
-    my_shopping_list = {}
+    shopping_list = {}
     for item in shopping_list_data:
         name = item.ingredient.name
         measurement_unit = item.ingredient.measurement_unit
         amount = item.amount
-        if name not in my_shopping_list:
-            my_shopping_list[name] = {
+        if name not in shopping_list:
+            shopping_list[name] = {
                 'measurement_unit': measurement_unit,
                 'amount': amount
             }
         else:
-            my_shopping_list[name]['amount'] += amount
+            shopping_list[name]['amount'] += amount
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = ('attachment; '
-                                       'filename="my_shopping_list.pdf"')
+                                       'filename="shopping_list.pdf"')
 
-    get_pdf_file(my_shopping_list, response)
+    get_pdf_file(shopping_list, response)
 
     return response

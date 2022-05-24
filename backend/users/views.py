@@ -1,17 +1,15 @@
+from django.contrib.auth import get_user_model
+from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from django_filters.rest_framework import DjangoFilterBackend
-from django.contrib.auth import get_user_model
+
+from api import messages
 from api.pagination import PagePagination
-from users.serializers import CustomUserSerializer
-from users.models import CustomUserCreate, Follow
-from users.serializers import FollowListSerializer
-from djoser.views import UserViewSet
-from api import response_messages as msg
+from users.models import Follow
+from users.serializers import CustomUserSerializer, FollowListSerializer
 
 User = get_user_model()
 
@@ -43,12 +41,12 @@ class CustomUserViewSet(UserViewSet):
         if request.method == 'POST':
             if subscription.exists():
                 return Response(
-                    msg.SUBSCRIPTION_ERROR,
+                    messages.SUBSCRIPTION_ERROR,
                     status=status.HTTP_400_BAD_REQUEST
                 )
             elif following == self.request.user:
                 return Response(
-                    msg.SELF_SUBSCRIPTION_ERROR,
+                    messages.SELF_SUBSCRIPTION_ERROR,
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -65,12 +63,12 @@ class CustomUserViewSet(UserViewSet):
             if subscription.exists():
                 subscription.delete()
                 return Response(
-                    msg.UNSUBSCRIBE_INFO,
+                    messages.UNSUBSCRIBE_INFO,
                     status=status.HTTP_204_NO_CONTENT
                 )
 
             return Response(
-                msg.UNSUBSCRIBE_ERROR,
+                messages.UNSUBSCRIBE_ERROR,
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -93,42 +91,3 @@ class CustomUserViewSet(UserViewSet):
                 content_type="application/json",
             )
         return None
-
-
-# class FollowApiView(APIView):
-#     pagination_class = PagePagination
-#     filter_backends = [DjangoFilterBackend]
-#     permission_classes = [IsAuthenticated]
-
-#     @action(detail=True, methods=['post', ],)
-#     def post(self, request, id):
-#         data = {'user': request.user.id, 'following': id}
-#         serializer = FollowSerializer(data=data, context={'request': request})
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-#     def delete(self, request, id):
-#         user = request.user
-#         following = get_object_or_404(CustomUserCreate, id=id)
-#         follow = get_object_or_404(
-#             Follow, user=user, following=following
-#         )
-#         follow.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# class FollowListAPIView(ListAPIView):
-#     pagination_class = PagePagination
-#     filter_backends = [DjangoFilterBackend]
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request):
-#         user = request.user
-#         queryset = CustomUserCreate.objects.filter(following__user=user)
-#         page = self.paginate_queryset(queryset)
-#         serializer = FollowListSerializer(
-#             page, many=True,
-#             context={'request': request}
-#         )
-#         return self.get_paginated_response(serializer.data)

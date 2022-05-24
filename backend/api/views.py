@@ -1,6 +1,3 @@
-import csv
-
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
@@ -8,19 +5,17 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+
+from api import messages
 from api.utils import get_download_shopping_cart
-
-from ingredients_recipes.models import (Favorite, Ingredient,
-                                        IngredientInRecipe, Recipe,
-                                        ShoppingCart, Tag)
-
+from ingredients_recipes.models import Ingredient, Recipe, ShoppingCart, Tag
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import PagePagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientSerializer,
-                          RecipeListSerializer, RecipeRepresentationSerializer, RecipeWriteSerializer,
-                          ShoppingCartSerializer, TagSerializer)
-from api import response_messages as msg
+                          RecipeListSerializer, RecipeSerializer,
+                          RecipeWriteSerializer, TagSerializer)
+
 
 class TagsViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
@@ -62,14 +57,17 @@ class RecipeViewSet(ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
-            user = request.user
             recipe = get_object_or_404(Recipe, id=pk)
-            favorite = get_object_or_404(
-                Favorite, user=user, recipe=recipe
-            )
-            favorite.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return None
+            favorite = self.request.user.favorites.filter(recipe=recipe)
+            if favorite.exists():
+                favorite.delete()
+                return Response(messages.UNFAVORITE_INFO,
+                                status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                messages.UNFAVORITE_ERROR,
+                status=status.HTTP_404_NOT_FOUND
+                )
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['post', 'delete'],
             url_name='shopping_cart',
@@ -80,7 +78,7 @@ class RecipeViewSet(ModelViewSet):
         if request.method == 'POST':
             if shopping_cart.exists():
                 return Response(
-                    msg.CART_ADD_ERROR,
+                    messages.CART_ADD_ERROR,
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -88,7 +86,7 @@ class RecipeViewSet(ModelViewSet):
                 user=self.request.user, recipe=recipe
             )
             shopping_cart.save()
-            serializer = RecipeRepresentationSerializer(recipe)
+            serializer = RecipeSerializer(recipe)
             return Response(
                 serializer.data, status=status.HTTP_201_CREATED
             )
@@ -97,12 +95,12 @@ class RecipeViewSet(ModelViewSet):
             if shopping_cart.exists():
                 shopping_cart.delete()
                 return Response(
-                    msg.CARD_DELETE_INFO,
+                    messages.CARD_DELETE_INFO,
                     status=status.HTTP_204_NO_CONTENT
                 )
 
             return Response(
-                msg.CARD_DELETE_ERROR,
+                messages.CARD_DELETE_ERROR,
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

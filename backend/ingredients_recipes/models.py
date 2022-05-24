@@ -76,7 +76,7 @@ class Recipe(models.Model):
         return f'{self.name} - {self.author}'
 
 
-class IngredientInRecipe(models.Model):
+class IngredientInRecipe(models.Model): #####################
     ingredient = models.ForeignKey(Ingredient,
                                    on_delete=models.CASCADE,
                                    verbose_name='Ингредиенты')
