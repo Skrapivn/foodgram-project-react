@@ -15,7 +15,7 @@ services:
       - ./.env
 
   web:
-    image: upliink/foodgram:v1.1
+    image: upliink/foodgram:v1.2
     restart: always
     volumes:
       - static_value:/app/static/

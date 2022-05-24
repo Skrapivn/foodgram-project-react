@@ -40,7 +40,7 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2 
         with:
-          context: ./api_yamdb/
+          context: ./backend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
 
@@ -57,7 +57,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/yamdb_final
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram
             sudo docker-compose stop
             sudo docker-compose rm web
             touch .env

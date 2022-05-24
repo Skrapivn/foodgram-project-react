@@ -1,8 +1,7 @@
 from django_filters import CharFilter
 from django_filters.rest_framework import FilterSet, filters
-
-from ingredients_recipes.models import (Favorite, Ingredient,
-                                        Recipe, ShoppingCart)
+from ingredients_recipes.models import (Favorite, Ingredient, Recipe,
+                                        ShoppingCart)
 
 
 class RecipeFilter(FilterSet):
