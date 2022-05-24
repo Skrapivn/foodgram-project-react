@@ -7,7 +7,7 @@ UNSUBSCRIBE_INFO = {
 }
 
 UNSUBSCRIBE_ERROR = {
-    'error': 'Вы не были подписаны на этого пользователя'
+    'error': 'Вы не подписаны на этого пользователя'
 }
 
 FAVORITE_ERROR = {
@@ -39,11 +39,11 @@ INGREDIENT_ERROR = {
 }
 
 TAG_ERROR = {
-    'error': 'Нужно выбрать хотя бы один тэг!'
+    'error': 'Нужно выбрать хотя бы один тэг'
 }
 
 UNIQUE_TAG_ERROR = {
-    'error': 'Нужно выбрать хотя бы один тэг!'
+    'error': 'Нельзя использовать одинаковый тэг дважды'
 }
 
 INGREDIENT_AMOUNT_ERROR = {

@@ -1,26 +1,26 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
+from api import messages
 from ingredients_recipes.models import (Favorite, Ingredient,
                                         IngredientInRecipe, Recipe,
                                         ShoppingCart, Tag)
 from users.serializers import CustomUserSerializer
-from api import messages
 
 
-class TagSerializer(serializers.ModelSerializer):  ############################
+class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
 
 
-class IngredientSerializer(serializers.ModelSerializer):  ###############
+class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
-class IngredientInRecipeSerializer(serializers.ModelSerializer):  #########
+class IngredientInRecipeSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -32,9 +32,9 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):  #########
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
-class RecipeListSerializer(serializers.ModelSerializer):  ##############
+class RecipeListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
-    author = CustomUserSerializer(read_only=True)  ###############
+    author = CustomUserSerializer(read_only=True)
     ingredients = serializers.SerializerMethodField(read_only=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
@@ -64,7 +64,7 @@ class RecipeListSerializer(serializers.ModelSerializer):  ##############
             user=request.user, recipe=obj).exists()
 
 
-class IngredientWriteSerializer(serializers.ModelSerializer): ####
+class IngredientWriteSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
     )
@@ -75,13 +75,13 @@ class IngredientWriteSerializer(serializers.ModelSerializer): ####
         fields = ('id', 'amount')
 
 
-class RecipeWriteSerializer(serializers.ModelSerializer): #############
+class RecipeWriteSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(), many=True
     )
     ingredients = IngredientWriteSerializer(many=True)
     author = CustomUserSerializer(read_only=True)
-    image = Base64ImageField()
+    image = Base64ImageField(max_length=None, use_url=True)
 
     class Meta:
         model = Recipe
@@ -168,16 +168,16 @@ class RecipeWriteSerializer(serializers.ModelSerializer): #############
         request = self.context.get('request')
         context = {'request': request}
         return RecipeListSerializer(
-            instance, context=context).data ###############
+            instance, context=context).data
 
 
-class RecipeSerializer(serializers.ModelSerializer): ######
+class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class FavoriteSerializer(serializers.ModelSerializer): #######
+class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ('user', 'recipe')

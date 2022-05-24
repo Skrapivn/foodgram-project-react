@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             with open(
-                '../data/ingredients.csv',
+                'ingredients_recipes/ingredients.csv',
                  encoding="utf8") as file:
                 file_reader = csv.reader(file)
                 for row in file_reader:
@@ -23,4 +23,3 @@ class Command(BaseCommand):
             raise CommandError(
                 'Файл не найден или возникла ошибка при обработке'
             )
-

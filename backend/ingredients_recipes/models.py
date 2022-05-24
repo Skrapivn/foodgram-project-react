@@ -149,7 +149,7 @@ class ShoppingCart(models.Model):
         verbose_name_plural = 'Корзина покупок'
 
     def __str__(self):
-        return '{} в корзине {}'.format(
+        return '{} в корзине покупок {}'.format(
             self.recipe.name,
             self.user.username
         )
