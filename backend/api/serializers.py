@@ -14,13 +14,13 @@ class TagSerializer(serializers.ModelSerializer):  ############################
         fields = ('id', 'name', 'color', 'slug')
 
 
-class IngredientSerializer(serializers.ModelSerializer):  ########################
+class IngredientSerializer(serializers.ModelSerializer):  ###############
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
-class IngredientInRecipeSerializer(serializers.ModelSerializer):  #########################
+class IngredientInRecipeSerializer(serializers.ModelSerializer):  #########
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -32,7 +32,7 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):  ##############
         fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
-class RecipeListSerializer(serializers.ModelSerializer):  #############################
+class RecipeListSerializer(serializers.ModelSerializer):  ##############
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)  ###############
     ingredients = serializers.SerializerMethodField(read_only=True)

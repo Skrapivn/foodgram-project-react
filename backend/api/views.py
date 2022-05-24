@@ -65,8 +65,7 @@ class RecipeViewSet(ModelViewSet):
                                 status=status.HTTP_204_NO_CONTENT)
             return Response(
                 messages.UNFAVORITE_ERROR,
-                status=status.HTTP_404_NOT_FOUND
-                )
+                status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     @action(detail=True, methods=['post', 'delete'],
@@ -90,7 +89,6 @@ class RecipeViewSet(ModelViewSet):
             return Response(
                 serializer.data, status=status.HTTP_201_CREATED
             )
-
         if request.method == 'DELETE':
             if shopping_cart.exists():
                 shopping_cart.delete()
@@ -98,12 +96,10 @@ class RecipeViewSet(ModelViewSet):
                     messages.CARD_DELETE_INFO,
                     status=status.HTTP_204_NO_CONTENT
                 )
-
             return Response(
                 messages.CARD_DELETE_ERROR,
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     @action(
