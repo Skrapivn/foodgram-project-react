@@ -126,3 +126,5 @@ DJOSER = {
         'current_user': 'users.serializers.CustomUserSerializer',
     },
 }
+
+USE_X_FORWARDED_HOST = True
