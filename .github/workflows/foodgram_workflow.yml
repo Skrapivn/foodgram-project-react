@@ -39,7 +39,7 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2 
         with:
-          context: ./backend/  # скопировать папку backend ?
+          context: ./backend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
 
@@ -55,8 +55,8 @@ jobs:
         username: ${{ secrets.USER }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
-        script: |  # нужна отдельная миграция, загрузка ингредиентов, добавил ключей.  sudo docker stop $(sudo docker ps -a -q) остановка всех контейнеров
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram
+        script: |
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
             sudo docker-compose stop
             sudo docker-compose rm web
             touch .env
@@ -69,6 +69,7 @@ jobs:
             echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             sudo docker-compose up -d
+            sudo docker-compose exec -T web python manage.py migrate
             sudo docker-compose exec -T web python manage.py collectstatic --no-input
 
   send_message:
@@ -80,4 +81,4 @@ jobs:
       with:
         to: ${{ secrets.TELEGRAM_TO }}
         token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: ${{ github.workflow }} Ура получилось! 
+        message: ${{ github.workflow }} Проект Foodgram загружен успешно! 

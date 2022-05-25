@@ -28,7 +28,7 @@ class CustomUserSerializer(UserSerializer):
 
 
 class FollowRecipesSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(max_length=None, use_url=True)  #temp
+    image = Base64ImageField(max_length=None, use_url=True)
 
     class Meta:
         model = Recipe

@@ -12,14 +12,6 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
 
-    def to_representation(self, instance):  # temp
-        return {
-            'id': instance.id,
-            'name': instance.get_name_display(),
-            'color': instance.color,
-            'slug': instance.slug
-        }
-
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -149,10 +141,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         author = self.context.get('request').user
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        image = validated_data.pop('image')  # temp
+        image = validated_data.pop('image')
         recipe = Recipe.objects.create(author=author,
                                        image=image,
-                                       **validated_data)   # temp
+                                       **validated_data)
         self.create_tags(tags, recipe)
         self.create_ingredients(ingredients, recipe)
         return recipe
