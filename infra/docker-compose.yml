@@ -1,9 +1,8 @@
-version: '3.8'
+version: '3.3'
 services:
+
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: upliink/foodgram_front:latest    
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -15,7 +14,7 @@ services:
       - ./.env
 
   web:
-    image: upliink/foodgram:v1.2
+    image: upliink/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -26,7 +25,7 @@ services:
       - ./.env
 
   nginx:
-    image: nginx:1.21.3-alpine
+    image: nginx:1.19.3
     ports:
       - "80:80"
     volumes:
