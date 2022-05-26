@@ -70,8 +70,8 @@ jobs:
             sudo docker-compose up -d
             sudo docker-compose exec -T web python manage.py migrate
             sudo docker-compose exec -T web python manage.py collectstatic --no-input
-            winpty sudo docker-compose exec web python manage.py import_data
-            winpty sudo docker-compose exec web python manage.py import_tags
+            sudo docker-compose exec -T web python manage.py import_data
+            sudo docker-compose exec -T web python manage.py import_tags
 
   send_message:
     runs-on: ubuntu-latest
