@@ -1,8 +1,11 @@
+from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from drf_extra_fields.fields import Base64ImageField
-from ingredients_recipes.models import Recipe
 from rest_framework import serializers
+
+from ingredients_recipes.models import Recipe
 from users.models import CustomUserCreate, Follow
+
+User = get_user_model()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -28,7 +31,6 @@ class CustomUserSerializer(UserSerializer):
 
 
 class FollowRecipesSerializer(serializers.ModelSerializer):
-    image = Base64ImageField(max_length=None, use_url=True)
 
     class Meta:
         model = Recipe
@@ -36,34 +38,49 @@ class FollowRecipesSerializer(serializers.ModelSerializer):
 
 
 class FollowListSerializer(serializers.ModelSerializer):
-    email = serializers.ReadOnlyField(source='following.email')
-    id = serializers.ReadOnlyField(source='following.id')
-    username = serializers.ReadOnlyField(source='following.username')
-    first_name = serializers.ReadOnlyField(source='following.first_name')
-    last_name = serializers.ReadOnlyField(source='following.last_name')
+    # email = serializers.ReadOnlyField(source='following.email')
+    # id = serializers.ReadOnlyField(source='following.id')
+    # username = serializers.ReadOnlyField(source='following.username')
+    # first_name = serializers.ReadOnlyField(source='following.first_name')
+    # last_name = serializers.ReadOnlyField(source='following.last_name')
     is_subscribed = serializers.SerializerMethodField(read_only=True)
     recipes = serializers.SerializerMethodField(read_only=True)
     recipes_count = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = Follow
+        model = User
         fields = (
             'email', 'id', 'username', 'first_name', 'last_name',
             'is_subscribed', 'recipes', 'recipes_count',
         )
 
     def get_is_subscribed(self, obj):
-        return obj.user.follower.filter(following=obj.following).exists()
+        user = self.context.get('request').user
+        if user:
+            return Follow.objects.filter(user=user, following=obj).exists()
+        return False
+        # return obj.user.follower.filter(following=obj.following).exists()
 
     def get_recipes(self, obj):
-        if self.context:
-            limit = self.context['request'].GET.get('recipes_limit')
-            if limit:
-                queryset = Recipe.objects.filter(
-                    author=obj.following.recipes)[:int(limit)]
+        request = self.context.get('request')
+        limit = request.query_params.get('recipes_limit')
+        if limit is not None:
+            recipes = obj.recipes.all()[:(int(limit))]
         else:
-            queryset = Recipe.objects.filter(author=obj.following.recipes)
-        return FollowRecipesSerializer(queryset, many=True).data
+            recipes = obj.recipes.all()
+        context = {'request': request}
+        return FollowRecipesSerializer(recipes,
+                                       many=True,
+                                       context=context).data
+        # if self.context:
+        #     limit = self.context['request'].GET.get('recipes_limit')
+        #     if limit:
+        #         queryset = Recipe.objects.filter(
+        #             author=obj.following)[:int(limit)]
+        # else:
+        #     queryset = Recipe.objects.filter(author=obj.following)
+        # return FollowRecipesSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
-        return obj.following.recipes.count()
+        return obj.recipes.count()
+        # return obj.following.recipes.count()
