@@ -7,13 +7,13 @@ from .models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
+        'id',
         'name',
         'measurement_unit',
     )
     list_editable = ('name', 'measurement_unit',)
     search_fields = ('name',)
-    list_filter = ('name', 'measurement_unit',)
+    list_filter = ('name',)
     empty_value_display = '-пусто-'
 
 
@@ -22,14 +22,28 @@ class IngredientInRecipeInLine(admin.TabularInline):
     extra = 2
 
 
+@admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'name',
+        'author',
+        'favorites',
+    )
     inlines = (IngredientInRecipeInLine, )
+    list_filter = ('author', 'name', 'tags', 'favorites',)
+    readonly_fields = ('favorites',)
+    empty_value_display = '-пусто-'
+
+    def favorites(self, obj):
+        return Favorite.objects.filter(recipe=obj).count()
+    favorites.short_description = 'Количество рецептов в избранном'
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
+        'id',
         'name',
         'color',
         'slug',
@@ -43,7 +57,7 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
+        'id',
         'user',
         'recipe',
     )
@@ -56,7 +70,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
-        'pk',
+        'id',
         'user',
         'recipe',
     )
@@ -65,5 +79,12 @@ class ShoppingCartAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(IngredientInRecipe)
+@admin.register(IngredientInRecipe)
+class RecipeIngredientsAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'recipe',
+        'ingredient',
+        'amount',
+    )
+    list_filter = ('id', 'recipe', 'ingredient')
