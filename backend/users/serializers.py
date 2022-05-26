@@ -59,8 +59,8 @@ class FollowListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         limit = request.query_params.get('recipes_limit')
         if limit is not None:
-            recipes = obj.recipes.all()[:(int(limit))]
-        recipes = obj.recipes.all()
+            recipes = obj.following.recipes.all()[:(int(limit))]
+        recipes = obj.following.recipes.all()
         context = {'request': request}
         return FollowRecipesSerializer(recipes,
                                        many=True,
