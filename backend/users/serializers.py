@@ -56,16 +56,14 @@ class FollowListSerializer(serializers.ModelSerializer):
         return obj.user.follower.filter(following=obj.following).exists()
 
     def get_recipes(self, obj):
-        request = self.context.get('request')
-        recipes = obj.following.recipes.all()
-        if request:
-            limit = request.GET.get('recipes_limit')
-            if limit is not None:
-                recipes = obj.following.recipes.all()[:(int(limit))]
-        context = {'request': request}
-        return FollowRecipesSerializer(recipes,
-                                       many=True,
-                                       context=context).data
+        if self.context:
+            limit = self.context['request'].GET.get('recipes_limit')
+            if limit:
+                queryset = Recipe.objects.filter(
+                    author=obj.author)[:int(limit)]
+        else:
+            queryset = Recipe.objects.filter(author=obj.author)
+        return FollowRecipesSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):
         return obj.following.recipes.count()
