@@ -1,12 +1,11 @@
 import os
 
 from django.http.response import HttpResponse
+from ingredients_recipes.models import IngredientInRecipe
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-
-from ingredients_recipes.models import IngredientInRecipe
 
 
 def get_pdf_file(data, response):
