@@ -8,9 +8,9 @@
 
 <http://51.250.104.164/>
 
-admin:
-mail - x@x.ru
-pass - Zx121212!
+Admin:
+mail - ```q@q.ru```
+pass - ```Zx121212!```
 
 ### Автор
 
