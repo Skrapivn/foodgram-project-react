@@ -4,8 +4,9 @@ from django.contrib.auth.models import Group
 from .models import CustomUserCreate, Follow
 
 
+@admin.register(CustomUserCreate)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_filter = (
+    list_display = (
         'pk',
         'email',
         'username',
@@ -29,5 +30,4 @@ class FollowAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-admin.site.register(CustomUserCreate, CustomUserAdmin)
 admin.site.unregister(Group)
