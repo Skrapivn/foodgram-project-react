@@ -19,8 +19,6 @@ from .serializers import (
 )
 
 
-
-
 class TagsViewSet(ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     permission_classes = [AllowAny]

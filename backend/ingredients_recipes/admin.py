@@ -24,6 +24,7 @@ class IngredientInRecipeInLine(admin.TabularInline):
     min_num = 1
     can_delete = False
 
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
