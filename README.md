@@ -8,6 +8,10 @@
 
 <http://51.250.104.164/>
 
+Admin:
+mail - ```q@q.ru```
+pass - ```Zx121212!```
+
 ### Автор
 
 [Sergey K.](https://github.com/skrapivn/)
