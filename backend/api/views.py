@@ -1,20 +1,24 @@
-from api import messages
-from api.utils import get_download_shopping_cart
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from ingredients_recipes.models import Ingredient, Recipe, ShoppingCart, Tag
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
+from api import messages
+from api.utils import get_download_shopping_cart
+from ingredients_recipes.models import Ingredient, Recipe, ShoppingCart, Tag
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import PagePagination
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (FavoriteSerializer, IngredientSerializer,
-                          RecipeListSerializer, RecipeSerializer,
-                          RecipeWriteSerializer, TagSerializer)
+from .serializers import (
+    FavoriteSerializer, IngredientSerializer, RecipeListSerializer,
+    RecipeSerializer, RecipeWriteSerializer, TagSerializer,
+)
+
+
 
 
 class TagsViewSet(ReadOnlyModelViewSet):
@@ -45,7 +49,17 @@ class RecipeViewSet(ModelViewSet):
             return RecipeListSerializer
         return RecipeWriteSerializer
 
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            raise MethodNotAllowed(request.method)
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = False
+        return self.update(request, *args, **kwargs)
+
     @action(detail=True, methods=['post', 'delete'],
+            url_name='favorite',
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         if request.method == 'POST':
@@ -56,7 +70,7 @@ class RecipeViewSet(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             recipe = get_object_or_404(Recipe, id=pk)
             favorite = self.request.user.favorites.filter(recipe=recipe)
             if favorite.exists():

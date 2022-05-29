@@ -1,9 +1,10 @@
-from api import messages
-from drf_extra_fields.fields import Base64ImageField
-from ingredients_recipes.models import (Favorite, Ingredient,
-                                        IngredientInRecipe, Recipe,
-                                        ShoppingCart, Tag)
 from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
+
+from api import messages
+from ingredients_recipes.models import (
+    Favorite, Ingredient, IngredientInRecipe, Recipe, ShoppingCart, Tag,
+)
 from users.serializers import CustomUserSerializer
 
 
@@ -124,16 +125,17 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         return data
 
     def create_tags(self, tags, recipe):
-        for tag in tags:
-            recipe.tags.add(tag)
+        recipe.tags.set(tags)
 
     def create_ingredients(self, ingredients, recipe):
-        for ingredient in ingredients:
-            ingredient_id = ingredient['id']
-            amount = ingredient['amount']
-            IngredientInRecipe.objects.create(
-                recipe=recipe, ingredient=ingredient_id, amount=amount
-            )
+        ingredients_list = [
+            IngredientInRecipe(
+                recipe=recipe,
+                ingredient=item['id'],
+                amount=item['amount']
+            ) for item in ingredients
+        ]
+        IngredientInRecipe.objects.bulk_create(ingredients_list)
 
     def create(self, validated_data):
         author = self.context.get('request').user

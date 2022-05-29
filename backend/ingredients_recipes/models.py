@@ -1,12 +1,15 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+
 from users.models import CustomUserCreate
 
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=200,
+                            blank=False,
                             verbose_name='Ингредиент')
     measurement_unit = models.CharField(max_length=200,
+                                        blank=False,
                                         verbose_name='Единицы измерения')
 
     class Meta:
@@ -25,12 +28,15 @@ class Ingredient(models.Model):
 class Tag(models.Model):
     name = models.CharField(max_length=200,
                             unique=True,
+                            blank=False,
                             verbose_name='Название')
     color = models.CharField(max_length=7,
                              unique=True,
+                             blank=False,
                              verbose_name='Цвет в HEX')
     slug = models.SlugField(max_length=200,
                             unique=True,
+                            blank=False,
                             verbose_name='Уникальный слаг')
 
     class Meta:
@@ -43,20 +49,21 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    tags = models.ManyToManyField(Tag,
+    tags = models.ManyToManyField(Tag, blank=False,
                                   verbose_name='Список тегов')
     author = models.ForeignKey(CustomUserCreate,
                                on_delete=models.CASCADE,
                                related_name='recipes',
                                verbose_name='Автор рецепта')
-    ingredients = models.ManyToManyField(Ingredient,
+    ingredients = models.ManyToManyField(Ingredient, blank=False,
                                          through='IngredientInRecipe',
                                          verbose_name='Список ингредиентов')
     name = models.CharField(max_length=200,
+                            blank=False,
                             verbose_name='Название')
     image = models.ImageField(upload_to='recipes/',
                               verbose_name='Ссылка на картинку на сайте')
-    text = models.TextField(verbose_name='Описание')
+    text = models.TextField(blank=False, verbose_name='Описание')
     cooking_time = models.PositiveSmallIntegerField(
         help_text='Время приготовления не может быть < 0',
         default=1,
@@ -76,10 +83,10 @@ class Recipe(models.Model):
 
 
 class IngredientInRecipe(models.Model):
-    ingredient = models.ForeignKey(Ingredient,
+    ingredient = models.ForeignKey(Ingredient, blank=False,
                                    on_delete=models.CASCADE,
                                    verbose_name='Ингредиенты')
-    recipe = models.ForeignKey(Recipe,
+    recipe = models.ForeignKey(Recipe, blank=False,
                                on_delete=models.CASCADE,
                                verbose_name='Рецепты')
     amount = models.PositiveSmallIntegerField(
