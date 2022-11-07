@@ -43,7 +43,7 @@ class CustomUserViewSet(UserViewSet):
                     messages.SUBSCRIPTION_ERROR,
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            elif following == self.request.user:
+            if following == self.request.user:
                 return Response(
                     messages.SELF_SUBSCRIPTION_ERROR,
                     status=status.HTTP_400_BAD_REQUEST
