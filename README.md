@@ -43,6 +43,8 @@ docker-compose exec backend python manage.py csv_upload
 docker-compose exec backend python manage.py createsuperuser
 ```
 
+По желанию можно отредактировать `foodgram_workflow.yml` добавив свои секреты на github, после запуска и проверки тестов поступит оповещение в телеграм.
+
 #### Автор
 
 [Sergey K.](https://github.com/skrapivn/)
